@@ -17,7 +17,7 @@ BEGIN {
 
 function print_defines() {
 	print "#define LOG_ENTRY() int __attribute__((unused)) _dummy_ ## __LINE__ = ({ "logfun"(\""logtag"->%s()\\n\", __FUNCTION__); 0; })"
-	print "#define LOG_RET(x) ({ __auto_type _x = (x); "logfun"(\""logtag"<-%s():L%d returns %s, retval as int=%d\\n\", __FUNCTION__, __LINE__, #x, +_x ); _x; })"
+	print "#define LOG_RET(x) ({ __auto_type _x = (x); "logfun"(\""logtag"<-%s():L%d returns %s, retval as longint=%ld\\n\", __FUNCTION__, __LINE__, #x, (long int) _x ); _x; })"
 	print "#define LOG_RET_COMPLEX(x) ({ "logfun"(\""logtag"<-%s():L%d returns %s\\n\", __FUNCTION__, __LINE__, #x ); (x); })"
 	print "#define LOG_VOID(_) do { "logfun"(\""logtag"<-%s():L%d returns void\\n\", __FUNCTION__, __LINE__); return; } while (0)"
 }
@@ -36,6 +36,7 @@ match($0, "[ \t]\*?[a-zA-Z0-9_]+\(") {
 # function declaration body
 /^{$/ {
 	maybevoid = match(decl_line, "void[ \t][a-zA-Z0-9_]+\(") ? "void " : ""
+	maybevoidstar = match(decl_line, "void[ \t]\*[a-zA-Z0-9_]+\(") ? "void *" : ""
 	fnameend = fnamebeg
 
 	# special case: IRQ handlers should do not log anything, assume some common type/name convtions below
@@ -77,8 +78,13 @@ match($0, "[ \t]\*?[a-zA-Z0-9_]+\(") {
 
 	# TODO: handle "return x; /* commments */"
 
+	# 'void *' case
+	if (maybevoidstar && match($0, /return [^;]+;$/)) {
+		retstr = substr($0, RSTART+7, RLENGTH-8)
+		retmacro = "return LOG_RET_COMPLEX"
+	}
 	# heurestic!: better formatting for return 'error or something' cases, (non function call, adress-of operators, etc)
-	if (!maybevoid && match($0, /return -?[a-zA-Z0-9_]+;$/)) {
+	else if (!maybevoid && match($0, /return -?[a-zA-Z0-9_]+;$/)) {
 		retstr = substr($0, RSTART+7, RLENGTH-8)
 		retmacro = "return " (retstr != "NULL" ? "LOG_RET" : "LOG_RET_COMPLEX")
 	}
