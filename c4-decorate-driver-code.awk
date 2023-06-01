@@ -26,11 +26,19 @@ NR == 1 {
 	print_defines()
 }
 
-# function declaration/definition begining
-match($0, "[ \t]\*?[a-zA-Z0-9_]+\(") {
-	regexskipchars = 2
-	fnamebeg = substr($0, RSTART+regexskipchars-1, RLENGTH-regexskipchars)
-	decl_line = $0
+{
+	if (prv_line !~ /\(/) {
+		# function declaration/definition begining - line break after retun type case
+		line = prv_line " " $0
+	} else
+		line = $0
+
+	# function declaration/definition begining
+	if (match(line, "[ \t]\*?[a-zA-Z0-9_]+\(")) {
+		regexskipchars = 2
+		fnamebeg = substr(line, RSTART+regexskipchars-1, RLENGTH-regexskipchars)
+		decl_line = line
+	}
 }
 
 # function declaration body
@@ -41,7 +49,11 @@ match($0, "[ \t]\*?[a-zA-Z0-9_]+\(") {
 
 	# special case: IRQ handlers should do not log anything, assume some common type/name convtions below
 	# special case: inline functions should also do not log anything
-	if (decl_line ~ /static inline|irqreturn_t .*irq_handler\(/) {
+	# special cases to decrease log spamming - HW related funcs
+	if (		decl_line ~ /static inline|irqreturn_t .*irq_handler\(/ ||
+			fnameend ~ /ice_get_hw_addr/ ||
+			fnameend ~ /ice_hw_to_dev/)
+	{
 		fnameend = 0
 		print "{"
 		next
@@ -61,12 +73,6 @@ match($0, "[ \t]\*?[a-zA-Z0-9_]+\(") {
 	}
 
 	print "{\tLOG_ENTRY();"
-	next
-}
-
-# special case to decrease log spamming: ov5647_read_reg or ov5645_read_reg
-(fnameend == "ov5647_read_reg" || fnameend == "ov5645_read_reg") && /return u8RdVal;/ {
-	print logfun"(\"%s %04x=>%02x\\n\", __FUNCTION__, reg, u8RdVal); return u8RdVal; /*LOG_RET*/"
 	next
 }
 
@@ -111,4 +117,7 @@ match($0, "[ \t]\*?[a-zA-Z0-9_]+\(") {
 	next
 }
 
-{print}
+{
+	prv_line = $0
+	print
+}
