@@ -27,16 +27,18 @@ NR == 1 {
 }
 
 {
-	if (prv_line !~ /\(/) {
+	if (prv_line ~ /^[^ ].*[(]/) {
+		line = $0
+	} else {
 		# function declaration/definition begining - line break after retun type case
 		line = prv_line " " $0
-	} else
-		line = $0
+	}
+}
 
+!/^[ \t#]/ {
 	# function declaration/definition begining
-	if (match(line, "[ \t]\*?[a-zA-Z0-9_]+\(")) {
-		regexskipchars = 2
-		fnamebeg = substr(line, RSTART+regexskipchars-1, RLENGTH-regexskipchars)
+	if (match(line, "[a-zA-Z0-9_]+[(]")) {
+		fnamebeg = substr(line, RSTART, RLENGTH-1)
 		decl_line = line
 	}
 }
