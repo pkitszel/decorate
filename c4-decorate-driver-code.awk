@@ -54,6 +54,7 @@ NR == 1 {
 	# special cases to decrease log spamming - HW related funcs
 	if (		decl_line ~ /static inline|irqreturn_t .*irq_handler\(/ ||
 			fnameend ~ /ice_get_hw_addr/ ||
+			fnameend ~ /ice_(get|clear)_vsi_ctx/ ||
 			fnameend ~ /ice_hw_to_dev/)
 	{
 		fnameend = 0
