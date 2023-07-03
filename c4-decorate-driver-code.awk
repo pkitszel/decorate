@@ -45,8 +45,8 @@ NR == 1 {
 
 # function declaration body
 /^{$/ {
-	maybevoid = match(decl_line, "void[ \t][a-zA-Z0-9_]+\(") ? "void " : ""
-	maybevoidstar = match(decl_line, "void[ \t]\*[a-zA-Z0-9_]+\(") ? "void *" : ""
+	maybevoid = match(decl_line, "void[ \t][a-zA-Z0-9_]+[(]") ? "void " : ""
+	maybevoidstar = match(decl_line, "void[ \t][*][a-zA-Z0-9_]+[(]") ? "void *" : ""
 	fnameend = fnamebeg
 
 	# special case: IRQ handlers should do not log anything, assume some common type/name convtions below

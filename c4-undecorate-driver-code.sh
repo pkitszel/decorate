@@ -12,7 +12,6 @@ die(){
 	exit $((rc ? rc : 99))
 }
 
-command -V mawk >/dev/null
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 while [ $# -ne 0 ]; do
