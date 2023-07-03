@@ -34,7 +34,7 @@ int main() {
 		++line_num;
 		int time1, time2;
 		char modname[32], fun[32], op[2];
-		if (5 == sscanf(dmesg_line.c_str(), "[ %d.%6d] C4-%32[^:]: %2[-<>]%32[^:]", &time1, &time2, &modname, &op, &fun)) {
+		if (5 == sscanf(dmesg_line.c_str(), "[ %d.%6d] deco-%32[^:]: %2[-<>]%32[^:]", &time1, &time2, &modname, &op, &fun)) {
 			//~ printf("%d\t[\t%d.%06d] %s %s %s\n", line_num, time1, time2, modname, op, fun);
 			if (op == string("->")) {
 				fs.push(fun, dmesg_line);

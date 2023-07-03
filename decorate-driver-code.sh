@@ -18,8 +18,8 @@ while [ $# -ne 0 ]; do
 	FILE_TO_TRANSFORM="$1"
 	FILE_TRANSFORMED="$FILE_TO_TRANSFORM".decorated
 	awk \
-	  -v logtag="C4-$(basename "${FILE_TO_TRANSFORM}" .c): " \
-	  -f "$SCRIPT_DIR"/c4-decorate-driver-code.awk "${FILE_TO_TRANSFORM}" \
+	  -v logtag="deco-$(basename "${FILE_TO_TRANSFORM}" .c): " \
+	  -f "$SCRIPT_DIR"/decorate-driver-code.awk "${FILE_TO_TRANSFORM}" \
 	> "${FILE_TRANSFORMED}"
 	if diff -q "$FILE_TRANSFORMED" "$FILE_TO_TRANSFORM" >/dev/null; then
 		rm "$FILE_TRANSFORMED"

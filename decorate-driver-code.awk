@@ -8,7 +8,7 @@
 BEGIN {
 	logfun = "pr_info"
 	if (!logtag) {
-		logtag = "C4: "
+		logtag = "deco: "
 		print "setting logtag to", logtag, "use wrapper shell script to pass C filename as a tag" > "/dev/stderr"
 	}
 }
