@@ -47,6 +47,7 @@ NR == 1 {
 /^{$/ {
 	maybevoid = match(decl_line, "void[ \t][a-zA-Z0-9_]+[(]") ? "void " : ""
 	maybevoidstar = match(decl_line, "void[ \t][*][a-zA-Z0-9_]+[(]") ? "void *" : ""
+	maybestructret = match(decl_line, "struct[ \t][a-zA-Z0-9_]+ [a-zA-Z0-9_]+[(]") ? "struct " : ""
 	fnameend = fnamebeg
 
 	# special case: IRQ handlers should do not log anything, assume some common type/name convtions below
@@ -87,8 +88,8 @@ NR == 1 {
 
 	# TODO: handle "return x; /* commments */"
 
-	# 'void *' case
-	if (maybevoidstar && match($0, /return [^;]+;$/)) {
+	# 'void *' case, (non pointer) 'struct' case
+	if ((maybevoidstar || maybestructret) && match($0, /return [^;]+;$/)) {
 		retstr = substr($0, RSTART+7, RLENGTH-8)
 		retmacro = "return LOG_RET_COMPLEX"
 	}
