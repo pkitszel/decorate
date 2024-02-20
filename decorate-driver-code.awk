@@ -80,7 +80,7 @@ NR == 1 {
 }
 
 # any non-documentation return
-/^[^*]+return.*;/ && fnameend {
+/^[^/*]+return.*;/ && fnameend {
 	match($0, /[^ \t]/)
 	padding = substr($0, 1, RSTART-1)
 	retmacro = ""
