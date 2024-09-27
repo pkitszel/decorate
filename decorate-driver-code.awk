@@ -82,7 +82,7 @@ NR == 1 {
 
 # any non-documentation return
 /^[^/*]+return.*;/ && fnameend {
-	match($0, /[^ \t]/)
+	match($0, /return/)
 	padding = substr($0, 1, RSTART-1)
 	retmacro = ""
 
@@ -103,7 +103,7 @@ NR == 1 {
 		retstr = substr($0, RSTART+7, RLENGTH-8)
 		retmacro = "return LOG_RET_COMPLEX"
 	}
-	# void erly-return cases
+	# void early-return cases
 	else if (maybevoid && match($0, /return;$/)) {
 		retmacro = "LOG_VOID"
 		retstr = "return"

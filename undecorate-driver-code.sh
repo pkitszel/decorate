@@ -28,7 +28,7 @@ while [ $# -ne 0 ]; do
 		s|^\{ int __attribute__\(\(unused\)\) dummy .+/\*LOG_RET\*/$|{|;
 		/^\#define LOG_(ENTRY|RET(_COMPLEX)?|VOID)\(/d;
 		s/^\{\tLOG_ENTRY\(\);$/{/;
-		s/^([\t ]+return )LOG_RET(_COMPLEX)?\((.+)\);$/\1\3;/;
+		s/(return )LOG_RET(_COMPLEX)?\((.+)\);$/\1\3;/;
 		s/LOG_VOID\(return\);$/return;/;
 		s/^LOG_VOID\(_\); }$/}/;
 		' "$FILE_TO_TRANSFORM" > "$FILE_TRANSFORMED"
