@@ -76,6 +76,14 @@ NR == 1 {
 		next
 	}
 
+	if (patt) {
+		if (fnameend !~ patt) {
+			fnameend = 0
+			print "{"
+			next
+		}
+	}
+
 	print "{\tLOG_ENTRY();"
 	next
 }
