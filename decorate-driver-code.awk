@@ -6,7 +6,7 @@
 # It adds 4 defines at begining of the file.
 
 BEGIN {
-	logfun = "pr_info"
+	logfun = "callcnt++ >100 ?0 :pr_info"
 	if (!logtag) {
 		logtag = "deco: "
 		print "setting logtag to", logtag, "use wrapper shell script to pass C filename as a tag" > "/dev/stderr"
@@ -16,7 +16,7 @@ BEGIN {
 /LOG_(ENTRY|RET(_COMPLEX)?|VOID)/ { print; next }
 
 function print_defines() {
-	print "#define LOG_ENTRY() int __attribute__((unused)) _dummy_ ## __LINE__ = ({ "logfun"(\""logtag"->%s()\\n\", __FUNCTION__); 0; })"
+	print "#define LOG_ENTRY() static int callcnt; int __attribute__((unused)) _dummy_ ## __LINE__ = ({ "logfun"(\""logtag"->%s()\\n\", __FUNCTION__); 0; })"
 	print "#define LOG_RET(x) ({ __auto_type _x = (x); "logfun"(\""logtag"<-%s():L%d returns %s, retval as longint=%ld\\n\", __FUNCTION__, __LINE__, #x, (long int) _x ); _x; })"
 	print "#define LOG_RET_COMPLEX(x) ({ "logfun"(\""logtag"<-%s():L%d returns %s\\n\", __FUNCTION__, __LINE__, #x ); (x); })"
 	print "#define LOG_VOID(_) do { "logfun"(\""logtag"<-%s():L%d returns void\\n\", __FUNCTION__, __LINE__); return; } while (0)"
